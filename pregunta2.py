@@ -1,4 +1,10 @@
-def lcs1(X, Y , L):
+#lcs
+#**Busca la cadena de similitud mas grande
+#**usando programacion dinamica guarda los valores en una matriz de dimension 2.
+from __future__ import print_function
+
+
+def lcs(X, Y , L):
     m = len(X)
     n = len(Y)
     for i in range(m + 1):
@@ -11,7 +17,11 @@ def lcs1(X, Y , L):
                 L[i][j] = max(L[i-1][j], L[i][j-1])
     return L
 
-def findPath(X , Y , L):
+#fpc
+#**funcion que recorre la matriz buscando la cadena de similitud mas larga
+#**dependiendo de X rellena la lista con - en las partes que no hay similitud
+#**Se uso como referencia https://www.youtube.com/watch?v=er7_2ATj-vk&t=1045s&ab_channel=jorgerodriguezc
+def fpc(X , Y , L):
     m = len(X)
     n = len(Y)
     palabra = ""
@@ -28,53 +38,8 @@ def findPath(X , Y , L):
                 n= n-1
     return palabra
 
-def borrado(X,h):
-    m = len(h)-1
-    n = len(X)-1
-    i = 0
-    cambiar = ""
-    while(m>=0):
-        while i <= n:
-            if X[i] == h[m]:
-                m-=1
-                i+=1
-            else:
-                cambiar += X[i]
-                i+=1
-    print("palabra a cambiar: ",cambiar)
-    return X
-
-def sacar(A,B,linea):  ##A -> string de inicio  ##B--> string final
-    "funcion k va a dividir la linea y borrar lo anterior"
-    lineaux = ""
-    c,flag = 0,0
-    if B == "": #Primer caso solo al inicio
-        for x in range(len(linea)):
-            if linea[x] == A:
-                print(lineaux)
-                return lineaux
-            else:
-                lineaux += linea[x]
-    elif A == "": #Segundo caso solo al final
-        for x in range(len(linea)):
-            if linea[x] == B:
-                flag =1
-            elif flag == 1:
-                lineaux += linea[x]
-    else:  #Tercer caso al medio
-        while c < len(linea):
-            """print("aca",A,B)"""
-            if linea[c] == A:
-                flag=1
-            elif linea[c] == B:
-                print(lineaux)
-                return lineaux
-            elif flag == 1:
-                lineaux += linea[c]
-            c+=1
-    print(lineaux)
-    return lineaux
-
+#creacion matriz
+##crea la matriz en la que se guardaran los valores.
 def creacion_matriz(X,Y):
     m = len(X)
     n = len(Y)
@@ -83,83 +48,111 @@ def creacion_matriz(X,Y):
         L.append([])
         for j in range(n+1):
             L[i].append(None)
-    
     ##llenado de la matriz.
     for i in range(m + 1):
         L[i][0] = 0
     for j in range(n + 1):
         L[0][j] = 0
-    L = lcs1(X,Y,L)
+    L = lcs(X,Y,L)
     return L
 
+def borrar_numero(palabra):
+    con = 0
+    while con < len(palabra):
+        if(palabra[con] == " "):
+            con += 1
+            palabra = palabra[con:]
+            return(palabra)
+        con += 1
+    return(-1)
 
+contador_casos = 0; contador_output = 0; definitivo = ""; tempt = ""
+num_casos = int(input())
+definitivo += str(num_casos) + "\n"
+while contador_casos < num_casos:
+    palabra1 = input()
+    X = borrar_numero(palabra1)
+    palabra2 = input()
+    Y = borrar_numero(palabra2)
+    m = len(X)
+    n = len(Y)
+    L = []
 
+    L1 = creacion_matriz(X,Y)
+    h1 = fpc(X,Y,L1)
+    h1 = list(reversed(h1))
 
-Y = "GGJAB"
-X = "GZJZAMB"
-
-"""
-Y = "Este es un texto"
-X = "Este es otro texto"
-"""
-"""
-Y = "ABCLGH"
-X = "AELFHR"
-"""
-"""
-m = len(X)
-n = len(Y)
-L = []
-for i in range(m+1):
-    L.append([])
-    for j in range(n+1):
-        L[i].append(None)
-    
-##llenado de la matriz.
-for i in range(m + 1):
-    L[i][0] = 0
-for j in range(n + 1):
-    L[0][j] = 0
-L = lcs1(X,Y,L)
-"""
-
-"""
-#para ver la matriz
-for i in range(m+1):
-    print(L[i])
-"""
-L1 = creacion_matriz(X,Y)
-h1 = findPath(X,Y,L1)
-h1 = list(reversed(h1))
-print(h1)
-
-L2 = creacion_matriz(Y,X)
-h2 = findPath(Y,X,L2)
-h2 = list(reversed(h2))
-print(h2)
-##Falta revisar el primero e ir borrando
-for i in range(len(h1)+1):
-    #print(i)
-    if(h1[i-1] == "-"):
-        print(X[i-1])
-
-
-
-
-"""
-c = 0
-print(h)
-while c <= len(h)-1:
-    if c == 0:
-        sacar(h[0],"",X)
-        sacar(h[0],"",Y)
-    if c == len(h)-1:
-        sacar("",h[c],X)
-        sacar("",h[c],Y)
-    else:
-        sacar(h[c],h[c+1],X)
-        sacar(h[c],h[c+1],Y)
-    c+=1
-"sacar("",h[2],X)"
-"borrado(X,h)"
-"""
+    L2 = creacion_matriz(Y,X)
+    h2 = fpc(Y,X,L2)
+    h2 = list(reversed(h2))
+    print(h1)
+    print(h2)
+    c1,c2 = 0,0
+    aux1 = ""
+    aux2 = ""
+    if(h1[0] != X[c1]):
+        while(c1 <len(h1) and h1[0] != X[c1]):
+            aux1 += X[c1]
+            c1 += 1
+        contador_output += 1
+        tempt +=  aux1 + "\n"
+        X = X[c1:]
+        aux1 = ""
+    if(h2[0] != Y[c2]):
+        while(c2 <len(h2) and h2[0] != Y[c2]):
+            aux2 += Y[c2]
+            c2 += 1
+        contador_output += 1
+        tempt += " " + aux2 + "\n"
+        Y = Y[c2:]
+        aux2 = ""
+    c1,c2 = 0,0
+    while c1 < len(h1) and c2 < len(h2):
+        if(h1[c1] == "-" and h2[c2] == "-"):
+            while(c1 <len(h1) and h1[c1] == "-"):
+                aux1 += X[c1]
+                c1 += 1
+            while (c2 < len(h2) and h2[c2] == "-"):
+                aux2 += Y[c2]
+                c2 += 1
+            contador_output += 1
+            tempt += aux1 + " " + aux2 + "\n"
+            aux1,aux2 = "",""
+        elif(h2[c2] == "-"):
+            while (c2 < len(h2) and h2[c2] == "-"):
+                aux2 += Y[c2]
+                c2 += 1
+            contador_output += 1
+            tempt += aux2 + "\n"
+            aux2 = ""
+        elif(h1[c1] == "-"):
+            while(c1 <len(h1) and h1[c1] == "-"):
+                aux1 += X[c1]
+                c1 += 1
+            contador_output += 1
+            tempt += aux1 + "\n"
+            aux1 = ""
+        c1+=1
+        c2+=1
+    while c1 < len(h1):
+        if(h1[c1] == "-"):
+            while(c1 <len(h1) and h1[c1] == "-"):
+                aux1 += X[c1]
+                c1 += 1
+            contador_output += 1
+            tempt +=  aux1 + "\n"
+            aux1 = ""
+        c1+=1
+    while c2 < len(h2):
+        if(h2[c2] == "-"):
+            while (c2 < len(h2) and h2[c2] == "-"):
+                aux2 += Y[c2]
+                c2 += 1
+            contador_output += 1
+            tempt += " " + aux2 + "\n"
+            aux2 = ""
+        c2+=1
+    definitivo += str(contador_output) + "\n"
+    definitivo += tempt
+    contador_output = 0;contador_casos += 1; tempt = ""
+print(definitivo)
